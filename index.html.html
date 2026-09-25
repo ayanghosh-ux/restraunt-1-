@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AURELIA | Royal Indian Haute Cuisine · Chef Ayan Ghosh</title>
+  <meta name="description" content="AURELIA by Chef Ayan Ghosh. Royal Indian haute cuisine featuring an interactive 3D signature dish, online ordering, and table reservations." />
+
+  <!-- Google Fonts: Cormorant Garamond & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Three.js 3D Background Canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- Assembly Tracker HUD -->
+  <div id="assembly-tracker" class="hud-card">
+    <div class="hud-header">
+      <span class="hud-phase" id="hud-stage-num">Phase 1 / 5</span>
+      <span class="hud-percent" id="hud-stage-percent">20% Plated</span>
+    </div>
+    <div class="hud-title" id="hud-stage-title">The Kansa Thali Base</div>
+    <div class="hud-desc" id="hud-stage-desc">Bronze coupe thali with hand-inlaid 24K gold mandala rim descends.</div>
+    <div class="hud-progress-bar">
+      <div id="hud-progress-fill" style="width: 20%;"></div>
+    </div>
+    <div class="hud-actions">
+      <button id="btn-scrub-prev">‹ Previous</button>
+      <button id="btn-scrub-next">Next Layer ›</button>
+      <button id="btn-scrub-complete" class="btn-gold-sm">Complete Dish</button>
+    </div>
+  </div>
+
+  <!-- Floating 3D Controls Bar -->
+  <div id="dish-controls" class="floating-controls">
+    <div class="control-pill">
+      <button class="dish-btn active" data-dish="galouti">Galouti Kebab</button>
+      <button class="dish-btn" data-dish="butter_chicken">Butter Chicken</button>
+      <button class="dish-btn" data-dish="shahi_tukda">Shahi Tukda</button>
+      <span class="divider"></span>
+      <button id="btn-toggle-inspect" class="icon-btn" title="Inspect 360°">👁 360°</button>
+      <button id="btn-toggle-steam" class="icon-btn" title="Toggle Dhungar Smoke">♨</button>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header id="navbar">
+    <div class="nav-container">
+      <div class="nav-left">
+        <a href="#" class="brand-logo">AURELIA</a>
+        <div id="hours-badge" class="badge">
+          <span class="pulse-dot"></span>
+          <span id="hours-status-text">Open Now</span>
+          <span class="hours-time">10 AM – 10 PM</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a href="#hero">Story</a>
+        <a href="#anatomy">Anatomy</a>
+        <a href="#menu">Royal Menu</a>
+        <a href="#chef">Chef Ayan Ghosh</a>
+        <a href="#reservations">Reservations</a>
+      </nav>
+
+      <div class="nav-right">
+        <a href="tel:6294601364" class="phone-link">
+          <i data-lucide="phone"></i>
+          <span>6294601364</span>
+        </a>
+        <a href="https://wa.me/916294601364" target="_blank" class="whatsapp-nav-btn">
+          <i data-lucide="message-circle"></i>
+          <span>WhatsApp</span>
+        </a>
+        <button id="btn-open-cart" class="cart-btn">
+          <i data-lucide="shopping-bag"></i>
+          <span>Order</span>
+          <span id="cart-counter" class="cart-badge">0</span>
+        </button>
+        <a href="#reservations" class="btn-primary">Book Table</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Sections -->
+  <main>
+    <!-- 1. Hero Section -->
+    <section id="hero" class="hero-section">
+      <div class="hero-content">
+        <div class="meta-tag">
+          <span>Royal Indian Haute Cuisine</span>
+          <span class="sep">·</span>
+          <span>Chef Ayan Ghosh</span>
+          <span class="sep">·</span>
+          <span>Open 10 AM – 10 PM</span>
+        </div>
+
+        <h1 class="hero-title">
+          The Sacred Alchemy of <span class="gold-italic">Dhungar</span> & Spice
+        </h1>
+
+        <p class="hero-subtext">
+          Progressive Royal Indian gastronomy by Executive Chef Ayan Ghosh. Centuries-old dum-pukht fire converges with Ayurvedic botanical precision and 24K edible gold.
+        </p>
+
+        <div class="hero-card">
+          <div class="card-meta">
+            <span class="gold-text" id="hero-course">Dastarkhwan Heritage</span>
+            <span class="price-text" id="hero-price">₹1,850</span>
+          </div>
+          <h2 class="card-title" id="hero-dish-name">Awadhi Galouti Kebab & Saffron Sheermal</h2>
+          <p class="card-desc" id="hero-dish-tagline">
+            Smoked over coal with 160 aromatic herbs, silken lamb mince, basted in brown cardamom ghee.
+          </p>
+          <div class="card-footer">
+            <button id="hero-inspect-btn" class="text-link">Inspect 3D Plate Details ›</button>
+          </div>
+        </div>
+
+        <div class="hero-cta-group">
+          <a href="#reservations" class="btn-primary">Reserve Your Table</a>
+          <a href="#menu" class="btn-secondary">Explore Indian Menu</a>
+        </div>
+      </div>
+
+      <div class="hero-bottom-bar">
+        <div class="info-cluster">
+          <div>
+            <span class="label">Executive Chef</span>
+            <span class="val">Ayan Ghosh</span>
+          </div>
+          <span class="pipe">|</span>
+          <div>
+            <span class="label">Operating Hours</span>
+            <span class="val">10:00 AM – 10:00 PM (Daily)</span>
+          </div>
+          <span class="pipe">|</span>
+          <div>
+            <span class="label">Direct Hotline</span>
+            <span class="val">+91 6294601364</span>
+          </div>
+        </div>
+        <a href="#anatomy" class="scroll-cue">Scroll to assemble dish ↓</a>
+      </div>
+    </section>
+
+    <!-- 2. Anatomy Section -->
+    <section id="anatomy" class="section-container">
+      <div class="section-header">
+        <div class="meta-tag">02. Terroir & Provenance · Ayurvedic Alchemy</div>
+        <h2 class="section-title">Anatomy of a Royal Masterpiece</h2>
+        <p class="section-subtext">
+          As the plate rotates and assembles layer by layer, explore the rare royal spices, hand-beaten chandi warq, and centuries-old dum techniques curated by Chef Ayan Ghosh.
+        </p>
+      </div>
+
+      <div class="grid-4" id="anatomy-cards-grid">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- 3. Interactive Menu Section -->
+    <section id="menu" class="section-container">
+      <div class="section-header">
+        <div class="meta-tag">03. Dastarkhwan Menu · Order for Delivery / Pickup</div>
+        <h2 class="section-title">The Royal Indian Repertoire</h2>
+        <p class="section-subtext">
+          Select any creation to customize accompaniments, spice profiles, and tandoori breads, or place an order via WhatsApp.
+        </p>
+      </div>
+
+      <!-- Categories & Filters -->
+      <div class="menu-nav-bar">
+        <div class="category-tabs">
+          <button class="cat-btn active" data-cat="all">All Creations</button>
+          <button class="cat-btn" data-cat="appetizer">Appetizers & Chaat</button>
+          <button class="cat-btn" data-cat="main">Royal Mains & Dum</button>
+          <button class="cat-btn" data-cat="dessert">Mithai & Desserts</button>
+          <button class="cat-btn" data-cat="drinks">Botanicals & Sips</button>
+        </div>
+        <div class="search-box">
+          <input type="text" id="menu-search-input" placeholder="Search dishes (e.g. Galouti, Dal)..." />
+        </div>
+      </div>
+
+      <!-- Menu Grid -->
+      <div class="menu-grid" id="menu-items-grid">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- 4. Chef & Heritage Section -->
+    <section id="chef" class="section-container">
+      <div class="section-header">
+        <div class="meta-tag">04. The Culinary Mastermind · Philosophy</div>
+        <h2 class="section-title">Chef Ayan Ghosh</h2>
+        <p class="section-subtext">
+          Trained in the heritage royal kitchens of Lucknow and Bengal, Chef Ayan Ghosh fuses ancient Vedic rasas with contemporary culinary architecture.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="glass-card">
+          <span class="gold-text">Executive Chef & Culinary Director</span>
+          <h3 class="card-name">Ayan Ghosh</h3>
+          <p class="card-bio">
+            "Indian culinary heritage is not merely a recipe book—it is an ancient science of aroma, medicinal botanical balance, and the sacred sacred geometry of fire."
+          </p>
+          <div class="quote-box">
+            "At AURELIA, we simmer our Bukhara Dal for 48 hours over live charcoal and hand-pound 160 spices for our Galouti. True luxury cannot be hurried."
+          </div>
+          <div class="chef-accolades">
+            <span>★ Master of Dum-Pukht Gastronomy</span>
+            <span>★ Best Progressive Indian Cuisine 2026</span>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <span class="gold-text">Direct Contact & Concierge</span>
+          <h3 class="card-name">The Chef's Desk</h3>
+          <p class="card-bio">
+            For bespoke banquets, customized dietary preferences, or private dining inquiries, reach out directly to Chef Ayan Ghosh's concierge desk.
+          </p>
+          <div class="contact-rows">
+            <div class="c-row">
+              <span class="c-label">Direct Hotline:</span>
+              <a href="tel:6294601364" class="c-val">+91 6294601364</a>
+            </div>
+            <div class="c-row">
+              <span class="c-label">WhatsApp Concierge:</span>
+              <a href="https://wa.me/916294601364" target="_blank" class="c-val text-green">6294601364</a>
+            </div>
+            <div class="c-row">
+              <span class="c-label">Official Email:</span>
+              <a href="mailto:ayanghosh162009@gmail.com" class="c-val">ayanghosh162009@gmail.com</a>
+            </div>
+            <div class="c-row">
+              <span class="c-label">Royal Address:</span>
+              <span class="c-val">The Royal Pavilion, 7 Park Street, Kolkata 700016</span>
+            </div>
+            <div class="c-row">
+              <span class="c-label">Daily Hours:</span>
+              <span class="c-val gold-text">10:00 AM – 10:00 PM IST</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Table Reservation Section -->
+    <section id="reservations" class="section-container">
+      <div class="section-header text-center">
+        <div class="meta-tag">05. Dastarkhwan Reservations · Instant Confirmation</div>
+        <h2 class="section-title">Reserve Your Royal Table</h2>
+        <p class="section-subtext">
+          Operating daily from 10:00 AM to 10:00 PM. Select your preferred date, service time, and party size to confirm table availability.
+        </p>
+      </div>
+
+      <div class="reservation-box glass-card" id="reservation-container">
+        <form id="reservation-form">
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label>Select Date</label>
+              <input type="date" id="res-date" required />
+            </div>
+
+            <div class="form-group">
+              <label>Seating Time (10 AM - 10 PM)</label>
+              <select id="res-time">
+                <option value="12:00">12:00 PM (Royal Lunch)</option>
+                <option value="13:30">01:30 PM (Midday Dastarkhwan)</option>
+                <option value="15:00">03:00 PM (Afternoon High Chai)</option>
+                <option value="18:30">06:30 PM (Early Evening)</option>
+                <option value="19:30" selected>07:30 PM (Grand Dinner)</option>
+                <option value="20:30">08:30 PM (Late Dinner)</option>
+                <option value="21:15">09:15 PM (Last Seating)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Number of Guests</label>
+              <select id="res-guests">
+                <option value="1">1 Guest</option>
+                <option value="2" selected>2 Guests</option>
+                <option value="4">4 Guests</option>
+                <option value="6">6 Guests</option>
+                <option value="8">8 Guests (Royal Table)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Your Full Name</label>
+              <input type="text" id="res-name" placeholder="e.g. Lord James Hamilton" required />
+            </div>
+
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="res-email" placeholder="ayanghosh162009@gmail.com" required />
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Phone / WhatsApp Number</label>
+              <input type="tel" id="res-phone" value="+91 6294601364" required />
+            </div>
+
+            <div class="form-group">
+              <label>Seating Area</label>
+              <select id="res-seating">
+                <option value="Main Dining Salon">Main Dining Salon (Acoustic Luxury)</option>
+                <option value="Chef Ayan's Tandoor Counter">Chef Ayan's Counter (Kitchen Pass View)</option>
+                <option value="Private Sheesh Mahal">Private Sheesh Mahal Salon</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Dietary Restrictions or Special Occasions</label>
+            <input type="text" id="res-notes" placeholder="e.g. Jain / Halal / Nut Allergy, Anniversary celebration..." />
+          </div>
+
+          <div class="form-actions">
+            <span class="live-avail-note" id="avail-status-note">✓ 3 tables currently available for this slot</span>
+            <button type="submit" class="btn-primary">Confirm Table Reservation</button>
+          </div>
+        </form>
+
+        <div id="reservation-success" class="hidden success-state">
+          <div class="check-icon">✓</div>
+          <h3 class="gold-text">Table Reservation Confirmed</h3>
+          <p class="res-msg" id="res-success-msg"></p>
+          <div class="res-card-summary" id="res-summary-box"></div>
+          <div class="res-actions">
+            <a id="res-wa-btn" href="#" target="_blank" class="btn-whatsapp">Send to WhatsApp (6294601364)</a>
+            <button id="res-reset-btn" class="btn-secondary">Make Another Reservation</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-col">
+        <h4 class="footer-logo">AURELIA</h4>
+        <p>Royal Indian Haute Cuisine. Curated by <strong>Chef Ayan Ghosh</strong>.</p>
+        <p class="gold-text">Daily Service: 10:00 AM – 10:00 PM IST</p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Location</h5>
+        <p>The Royal Pavilion, 7 Park Street<br>Kolkata, West Bengal 700016, India</p>
+        <p>Direct: <a href="tel:6294601364">+91 6294601364</a></p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Contact & Concierge</h5>
+        <p>WhatsApp: <a href="https://wa.me/916294601364" class="text-green">+91 6294601364</a></p>
+        <p>Email: <a href="mailto:ayanghosh162009@gmail.com">ayanghosh162009@gmail.com</a></p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Royal Etiquette</h5>
+        <p>Traditional Indian or formal evening attire requested. Continuous dastarkhwan service from 10 AM to 10 PM daily.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 AURELIA Royal Indian Haute Cuisine · Chef Ayan Ghosh. All Rights Reserved.</span>
+      <span>Direct Concierge: 6294601364</span>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp Concierge Widget -->
+  <a href="https://wa.me/916294601364?text=Namaste%20Chef%20Ayan%20Ghosh%20and%20AURELIA%20Team%2C%20I%20would%20like%20to%20inquire%20about%20a%20table%20reservation." target="_blank" class="whatsapp-float" title="Chat on WhatsApp (+91 6294601364)">
+    <i data-lucide="message-circle"></i>
+    <span class="wa-tooltip">Chat with Chef Ayan's Concierge (6294601364)</span>
+  </a>
+
+  <!-- Cart Drawer Overlay -->
+  <div id="cart-drawer" class="drawer-overlay hidden">
+    <div class="drawer-panel">
+      <div class="drawer-header">
+        <div class="header-left">
+          <i data-lucide="shopping-bag" class="gold-text"></i>
+          <h3>Your Royal Order</h3>
+        </div>
+        <button id="btn-close-cart" class="close-btn">&times;</button>
+      </div>
+
+      <div class="order-mode-tabs">
+        <button id="mode-delivery" class="mode-tab active">Chauffeur Delivery (35-45m)</button>
+        <button id="mode-pickup" class="mode-tab">Atelier Pickup (20-25m)</button>
+      </div>
+
+      <div id="cart-items-container" class="cart-items-list">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <div class="cart-summary">
+        <div class="sum-row">
+          <span>Subtotal</span>
+          <span id="cart-subtotal">₹0</span>
+        </div>
+        <div class="sum-row">
+          <span>Delivery</span>
+          <span id="cart-delivery">Complimentary</span>
+        </div>
+        <div class="sum-row total-row">
+          <span>Total</span>
+          <span id="cart-total" class="gold-text">₹0</span>
+        </div>
+
+        <button id="btn-checkout-wa" class="btn-whatsapp-full">
+          Order via WhatsApp (+91 6294601364)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Item Customization Modal -->
+  <div id="custom-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="modal-item-title" class="gold-text">Item Name</h3>
+          <span id="modal-item-price" class="item-price">₹0</span>
+        </div>
+        <button id="btn-close-modal" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="modal-item-desc" class="modal-desc"></p>
+
+        <div class="modal-section">
+          <label>Spice Profile</label>
+          <div class="chip-group">
+            <button class="chip active">Authentic Royal Spice</button>
+            <button class="chip">Gentle Aromatic (Mild)</button>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <label>Add Bespoke Accompaniments</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" id="mod-acc-1" value="250" /> Extra 24K Chandi Warq & Mint (+₹250)</label>
+            <label><input type="checkbox" id="mod-acc-2" value="180" /> Garlic & Kalonji Tandoori Naan (+₹180)</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-confirm-add" class="btn-primary w-full">Add to Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
